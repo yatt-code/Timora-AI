@@ -1,64 +1,77 @@
-# Discord Bot with Claude Integration
+# Discord Bot with AI Integration
 
-This project is a proof-of-concept Discord bot that integrates with the Claude AI by Anthropic. The bot responds to messages in your Discord server using Claude's natural language processing capabilities. While the code provided is a starting point, the possibilities are endless if you ask Claude to add features to this foundation. Keep in mind that Claude gives a free $5 of API usage, but you'll need to pay for usage beyond that, even if you have a paid Claude Opus subscription. Consider switching to the computationally cheaper versions of Claude in the code to reduce the cost per message.
+This project is a Discord bot that integrates with AI models through the OpenRouter API. The bot responds to messages in your Discord server using advanced language models, providing natural and context-aware responses. It supports text interactions and image analysis, making it a versatile tool for various Discord communities.
 
-Claude failed constantly and required hand-holding to get this far, but it should be good from here. This upload should be enough for you to avoid the lame technical difficulties phase of programming and get straight to creativity.
+## Features
+
+- AI-powered responses using models from OpenRouter
+- Image analysis capabilities
+- Conversation context management
+- Queue system for handling multiple requests
+- Rate limiting and error handling
+- Support for multiple AI models
+
+## Prerequisites
+
+- Python 3.7 or higher
+- A Discord account and a server where you have permissions to add bots
+- An OpenRouter account and API key
 
 ## Installation
 
-1. Install Python
+1. Clone this repository or download the source code.
 
-2. Open a command prompt running as administrator and navigate to the installation folder.
-
-3. Install the required Python packages by running the following commands:
+2. Install the required Python packages:
    ```
-   python -m pip install discord.py --user
-   python -m pip install anthropic --user
+   pip install -r requirements.txt
    ```
 
-4. Create a Discord server (if you haven't already) within the Discord UI.
-
-5. Create a bot account:
-   - Go to the Discord Developer Portal: [Discord Applications](https://discord.com/developers/applications/)
-   - Click on "New Application" and give your bot a name.
-   - Navigate to the "Bot" section on the left sidebar and click "Add Bot".
-   - Copy the bot token (keep it secure, as it acts as the bot's username and password).
-
-6. Replace the placeholder `'######'` in the `DC.py` file with your bot token:
-   ```python
-   client.run('######')
+3. Create a `.env` file in the project root and add the following:
+   ```
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   DISCORD_BOT_TOKEN=your_discord_bot_token_here
    ```
 
-7. Authorize the bot to join your server:
-   - Go to the "OAuth2" section on the left sidebar in the Discord Developer Portal.
-   - Under "Scopes", check the "bot" option.
-   - Under "Bot Permissions", check all or nearly all of the permissions that appear.
-   - Copy the generated URL and paste it into a new browser tab.
-   - Select the server you created from the dropdown list and click "Authorize".
+4. Replace `your_openrouter_api_key_here` with your OpenRouter API key and `your_discord_bot_token_here` with your Discord bot token.
 
-8. Obtain your Claude API key:
-   - Go to the Anthropic Console: [Anthropic Settings](https://console.anthropic.com/settings/keys)
-   - Generate a new API key and copy it.
+## Setting up the Discord Bot
 
-9. Replace the placeholder `'#####'` in the `DC.py` file with your Claude API key:
-   ```python
-   anthropic_client = anthropic.Anthropic(api_key="#####")
-   ```
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications/).
+2. Click "New Application" and give your bot a name.
+3. Go to the "Bot" section and click "Add Bot".
+4. Under "Token", click "Copy" to copy your bot token (use this in your `.env` file).
+5. Enable the "Message Content Intent" under "Privileged Gateway Intents".
+6. Go to "OAuth2" > "URL Generator", select "bot" under scopes, and choose necessary permissions.
+7. Use the generated URL to invite the bot to your server.
 
 ## Usage
 
-1. Open a non-admin command prompt and navigate to the location of the `DC.py` file.
-
-2. Run the bot by typing the following command and hitting Enter:
+1. Run the bot:
    ```
-   DC.py
+   python DC.py
    ```
 
-3. As long as the Python script is running on a computer connected to the internet, the bot will be logged in to your Discord server.
+2. In your Discord server, use the command prefix `!ai` followed by your message to interact with the bot. For example:
+   ```
+   !ai What's the weather like today?
+   ```
 
-4. Any message sent by anyone in any channel of your server will be responded to by Claude.
+3. To analyze an image, attach an image to your message along with the `!ai` command.
 
-## Additional Notes
+## Customization
 
-- Make sure to keep your bot token and Claude API key secure and do not share them with anyone.
-- You can customize the bot's behavior by modifying the code in the `DC.py` file.
+- You can change the AI model by modifying the `OPENROUTER_MODEL` variable in `DC.py`.
+- Adjust the `MAX_CONTEXT_MESSAGES` and `CONTEXT_EXPIRATION` variables to change how conversation context is managed.
+- Modify the `MAX_QUEUE_SIZE` to change the number of requests the bot can handle simultaneously.
+
+## Contributing
+
+Contributions to improve the bot are welcome. Please feel free to submit pull requests or open issues to suggest improvements or report bugs.
+
+## License
+
+This project is open-source and available under the MIT License.
+
+## Disclaimer
+
+This bot uses AI models that may produce content that doesn't reflect real-world facts or opinions. Always verify important information from reliable sources.
