@@ -27,9 +27,20 @@ CACHE_EXPIRATION = 3600  # Cache expiration time in seconds (1 hour)
 MAX_REQUESTS = 5
 TIME_WINDOW = 60  # 1 minute
 TRIGGER_PREFIX = "!ai"
+MAX_CONTEXT_MESSAGES = 5  # Maximum number of previous messages to keep as context
+CONTEXT_EXPIRATION = 600  # Context expiration time in seconds (10 minutes)
 
-# Set SSL certificate file path
-os.environ['SSL_CERT_FILE'] = os.getenv('SSL_CERT_FILE')
+# Global variables
+MAX_QUEUE_SIZE = 10  # Maximum number of requests in the queue
+request_queue = asyncio.Queue(maxsize=MAX_QUEUE_SIZE)
+conversation_history = defaultdict(lambda: {"messages": deque(maxlen=MAX_CONTEXT_MESSAGES), "last_update": time.time()})
+
+# Set SSL certificate file path if provided
+ssl_cert_file = os.getenv('SSL_CERT_FILE')
+if ssl_cert_file:
+    os.environ['SSL_CERT_FILE'] = ssl_cert_file
+else:
+    logging.warning("SSL_CERT_FILE not set in .env file. Using default SSL context.")
 
 # Set up SSL context
 ssl_context = ssl.create_default_context(cafile=certifi.where())
@@ -40,14 +51,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
-
-# Add this near the top of your file, after the constants and before the function definitions
-MAX_QUEUE_SIZE = 10  # Maximum number of requests in the queue
-request_queue = asyncio.Queue(maxsize=MAX_QUEUE_SIZE)
-
-# Create a custom aiohttp ClientSession with the SSL context
-async def get_aiohttp_session():
-    return aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context))
 
 # Create the Discord client
 client = discord.Client(intents=intents)
@@ -222,6 +225,10 @@ async def process_message(message, user_message, image_data):
             await message.channel.send(f"Sorry, an error occurred: {str(e)}")
             return
 
+# Add this function after the SSL context setup and before the client creation
+async def get_aiohttp_session():
+    return aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context))
+
 # Modify the main() function at the end of the file:
 async def main():
     async with await get_aiohttp_session() as session:
@@ -238,7 +245,11 @@ if not OPENROUTER_API_KEY:
     logging.error("OpenRouter API key is not set. Please check your .env file.")
     raise ValueError("OpenRouter API key is missing")
 
-logging.info("OpenRouter API key loaded successfully")
+if not DISCORD_BOT_TOKEN:
+    logging.error("Discord bot token is not set. Please check your .env file.")
+    raise ValueError("Discord bot token is missing")
+
+logging.info("API keys and tokens loaded successfully")
 
 # Add these imports at the top of your file
 from collections import defaultdict, deque
